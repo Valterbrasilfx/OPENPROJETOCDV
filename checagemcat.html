@@ -221,23 +221,23 @@
                     };
                 });
                 
-                // Group athletes first by gender, then belt, then weight class
+                // Agrupa atletas por gênero, depois por faixa, peso e idade
                 const gruposPorGenero = {};
                 atletas.forEach(atleta => {
                     const genero = atleta.genero;
                     if (!gruposPorGenero[genero]) {
                         gruposPorGenero[genero] = {};
                     }
-                    const chaveFaixaPeso = `${atleta.faixa} - ${atleta.peso}`;
-                    if (!gruposPorGenero[genero][chaveFaixaPeso]) {
-                        gruposPorGenero[genero][chaveFaixaPeso] = [];
+                    const chaveCategoria = `${atleta.faixa} - ${atleta.peso} - ${atleta.idade}`;
+                    if (!gruposPorGenero[genero][chaveCategoria]) {
+                        gruposPorGenero[genero][chaveCategoria] = [];
                     }
-                    gruposPorGenero[genero][chaveFaixaPeso].push(atleta);
+                    gruposPorGenero[genero][chaveCategoria].push(atleta);
                 });
                 
                 const container = document.getElementById('categorias');
                 
-                // Iterate over the groups and create a table for each category
+                // Itera sobre os grupos e cria uma tabela para cada categoria
                 for (const genero in gruposPorGenero) {
                     if (gruposPorGenero.hasOwnProperty(genero)) {
                         const generoTitulo = document.createElement('h2');
