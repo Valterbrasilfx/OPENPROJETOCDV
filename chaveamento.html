@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chaveamento | Arena Competidor</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .header {
+            background-color: #000;
+            color: #fff;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            width: 250px;
+            height: auto;
+            margin-right: 15px;
+        }
+
+        .container {
+            padding: 40px 20px;
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .container h2 {
+            color: #dc3545;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .chave-titulo {
+            text-align: center;
+            font-size: 1.5em;
+            color: #000;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .chave-box {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .luta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px dashed #ccc;
+            padding: 10px 0;
+        }
+
+        .luta:last-child {
+            border-bottom: none;
+        }
+
+        .competidor {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        .versus {
+            color: #dc3545;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="logo-container">
+            <img src="img/arena2.png" alt="Logo Arena Competidor" class="logo">
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Chaveamento do Evento</h2>
+        
+        <div class="chave-box">
+            <h3 class="chave-titulo">Faixa Branca - Meio Pesado</h3>
+            <div class="luta">
+                <span class="competidor">Atleta A</span>
+                <span class="versus">vs</span>
+                <span class="competidor">Atleta B</span>
+            </div>
+            <div class="luta">
+                <span class="competidor">Atleta C</span>
+                <span class="versus">vs</span>
+                <span class="competidor">Atleta D</span>
+            </div>
+        </div>
+
+        <div class="chave-box">
+            <h3 class="chave-titulo">Faixa Preta - Leve</h3>
+            <div class="luta">
+                <span class="competidor">Atleta X</span>
+                <span class="versus">vs</span>
+                <span class="competidor">Atleta Y</span>
+            </div>
+            <div class="luta">
+                <span class="competidor">Atleta W</span>
+                <span class="versus">vs</span>
+                <span class="competidor">Atleta Z</span>
+            </div>
+        </div>
+        
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checagem | Arena Competidor</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .header {
+            background-color: #000;
+            color: #fff;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            width: 250px;
+            height: auto;
+            margin-right: 15px;
+        }
+
+        .main-container {
+            flex-grow: 1;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .checagem-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 900px;
+            border-top: 5px solid #dc3545;
+            text-align: center;
+        }
+
+        .checagem-container h1 {
+            color: #dc3545;
+            margin-bottom: 30px;
+        }
+
+        /* Estilos para os títulos de categoria */
+        .category-title {
+            background-color: #dc3545;
+            color: #fff;
+            font-weight: bold;
+            padding: 10px;
+            margin-top: 30px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+            color: #555;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .gender-title {
+            background-color: #000;
+            color: #fff;
+            font-weight: bold;
+            padding: 15px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.5em;
+        }
+
+        /* --- Estilos para dispositivos móveis --- */
+        @media screen and (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                padding: 10px;
+                justify-content: center;
+            }
+
+            .logo {
+                width: 180px;
+                margin-right: 0;
+            }
+
+            .main-container {
+                padding: 10px;
+            }
+
+            .checagem-container {
+                padding: 15px;
+                box-shadow: none;
+            }
+
+            .checagem-container h1 {
+                font-size: 1.5em;
+            }
+
+            .gender-title {
+                font-size: 1.2em;
+                padding: 10px;
+            }
+
+            .category-title {
+                font-size: 1em;
+                padding: 8px;
+            }
+
+            /* Oculta o cabeçalho da tabela (thead) em mobile */
+            table thead {
+                display: none;
+            }
+
+            /* Transforma as linhas da tabela em blocos */
+            table, tbody, tr, td {
+                display: block;
+                width: 100%;
+                border: none;
+                text-align: left;
+            }
+
+            tr {
+                border-bottom: 2px solid #dc3545;
+                margin-bottom: 15px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                border-radius: 5px;
+                background-color: #fff;
+            }
+
+            td {
+                padding: 12px;
+                position: relative;
+                padding-left: 100px; /* Espaço para o label */
+            }
+
+            /* Cria o "label" para cada célula, usando o data-label */
+            td::before {
+                content: attr(data-label);
+                position: absolute;
+                left: 12px;
+                top: 50%;
+                transform: translateY(-50%);
+                font-weight: bold;
+                color: #555;
+                text-align: left;
+                width: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="logo-container">
+            <img src="arena2.png" alt="Logo Arena Competidor" class="logo">
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="checagem-container">
+            <h1>Lista de Atletas por Categoria</h1>
+            <div id="categorias">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQZQSnHrELe0fIBczmqwlFgnovIXSR7LDcdWWyecazTGrp6TBl3ceVXLP-MS-A4xXEWPvAdodUXZygS/pub?output=csv';
+        
+        async function carregarDados() {
+            try {
+                const response = await fetch(sheetUrl);
+                const csvData = await response.text();
+                
+                const linhas = csvData.split('\n').slice(1).filter(linha => linha.trim() !== '');
+                const atletas = linhas.map(linha => {
+                    const colunas = linha.split(',');
+                    return {
+                        nome: colunas[1].trim(),
+                        faixa: colunas[2].trim(),
+                        peso: colunas[3].trim(),
+                        idade: colunas[4].trim(),
+                        professor: colunas[5].trim(),
+                        academia: colunas[6].trim(),
+                        genero: colunas[7] ? colunas[7].trim() : 'N/A' // Assuming gender is in column 7
+                    };
+                });
+                
+                // Group athletes first by gender, then belt, then weight class
+                const gruposPorGenero = {};
+                atletas.forEach(atleta => {
+                    const genero = atleta.genero;
+                    if (!gruposPorGenero[genero]) {
+                        gruposPorGenero[genero] = {};
+                    }
+                    const chaveFaixaPeso = `${atleta.faixa} - ${atleta.peso}`;
+                    if (!gruposPorGenero[genero][chaveFaixaPeso]) {
+                        gruposPorGenero[genero][chaveFaixaPeso] = [];
+                    }
+                    gruposPorGenero[genero][chaveFaixaPeso].push(atleta);
+                });
+                
+                const container = document.getElementById('categorias');
+                
+                // Iterate over the groups and create a table for each category
+                for (const genero in gruposPorGenero) {
+                    if (gruposPorGenero.hasOwnProperty(genero)) {
+                        const generoTitulo = document.createElement('h2');
+                        generoTitulo.className = 'gender-title';
+                        generoTitulo.textContent = genero.toUpperCase();
+                        container.appendChild(generoTitulo);
+                        
+                        const gruposDaFaixa = gruposPorGenero[genero];
+                        for (const chave in gruposDaFaixa) {
+                            if (gruposDaFaixa.hasOwnProperty(chave)) {
+                                const categoriaTitulo = document.createElement('h3');
+                                categoriaTitulo.className = 'category-title';
+                                categoriaTitulo.textContent = chave;
+                                container.appendChild(categoriaTitulo);
+                                
+                                const tabela = document.createElement('table');
+                                tabela.innerHTML = `
+                                    <thead>
+                                        <tr>
+                                            <th>Nome</th>
+                                            <th>Professor</th>
+                                            <th>Academia</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                `;
+                                
+                                const tbody = tabela.querySelector('tbody');
+                                gruposDaFaixa[chave].forEach(atleta => {
+                                    const tr = document.createElement('tr');
+                                    tr.innerHTML = `
+                                        <td data-label="Nome">${atleta.nome}</td>
+                                        <td data-label="Professor">${atleta.professor}</td>
+                                        <td data-label="Academia">${atleta.academia}</td>
+                                    `;
+                                    tbody.appendChild(tr);
+                                });
+                                
+                                container.appendChild(tabela);
+                            }
+                        }
+                    }
+                }
+
+            } catch (error) {
+                console.error("Erro ao carregar os dados da planilha:", error);
+                const container = document.getElementById('categorias');
+                container.innerHTML = '<p style="text-align:center;">Não foi possível carregar a lista de atletas.</p>';
+            }
+        }
+        
+        carregarDados();
+    </script>
+</body>
+</html>

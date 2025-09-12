@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arena Competidor - Evento de Luta</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .header {
+            background-color: #000;
+            color: #fff;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            width: 250px;
+            height: auto;
+            margin-right: 15px;
+            max-width: 150px; /* Limita a largura do logo para telas menores */
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.8em;
+            color: #fff;
+        }
+
+        .main-content {
+            text-align: center;
+            padding: 50px 20px;
+        }
+
+        .main-content h2 {
+            color: #dc3545;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        .cartaz-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .cartaz-container a {
+            display: inline-block;
+            transition: transform 0.3s ease;
+            width: 100%;
+        }
+
+        .cartaz-container a:hover {
+            transform: scale(1.03);
+        }
+
+        .cartaz-container img {
+            max-width: 100%;
+            height: auto;
+            border: 5px solid #fff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .call-to-action {
+            margin-top: 30px;
+            font-size: 1.1em;
+            color: #555;
+        }
+
+        /* ------------------------------------------- */
+        /* Estilos para dispositivos móveis */
+        /* ------------------------------------------- */
+        @media screen and (max-width: 768px) {
+            .logo {
+                width: 180px; /* Ajuste para o logo em telas menores */
+                max-width: 100%;
+            }
+            
+            .header {
+                justify-content: center; /* Centraliza o logo no cabeçalho em telas menores */
+            }
+
+            .main-content h2 {
+                font-size: 1.5em; /* Reduz o tamanho do título principal */
+            }
+
+            .call-to-action {
+                font-size: 1em; /* Reduz o tamanho da fonte da chamada para ação */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="logo-container">
+            <img src="arena2.png" alt="Logo Arena Competidor" class="logo">
+        </div>
+    </div>
+
+    <div class="main-content">
+        <h2>Seu Evento de Lutas</h2>
+        <div class="cartaz-container">
+            <a href="menu.html">
+                <img src="WhatsApp Image 2025-09-08 at 09.50.16.jpeg" alt="Cartaz do Evento de Luta">
+            </a>
+        </div>
+        <p class="call-to-action">Clique no cartaz para ver as opções do evento.</p>
+    </div>
+
+</body>
+</html>

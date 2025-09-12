@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arena Competidor | Checagem de Atletas</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .header {
+            background-color: #000;
+            color: #fff;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            position: absolute;
+            top: 0;
+        }
+
+        .logo {
+            width: 250px;
+            height: auto;
+        }
+
+        .main-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .button {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #fff;
+            background-color: #dc3545;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            text-transform: uppercase;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: #c82333;
+            transform: translateY(-2px);
+        }
+
+        .title {
+            color: #333;
+            margin-bottom: 40px;
+            font-size: 2em;
+        }
+        
+        /* --- Estilos para dispositivos móveis --- */
+        @media screen and (max-width: 768px) {
+            .logo {
+                width: 180px; /* Reduz o tamanho do logo */
+                max-width: 100%;
+            }
+
+            .header {
+                padding: 10px; /* Reduz o espaçamento do cabeçalho */
+            }
+
+            .title {
+                font-size: 1.5em; /* Reduz o tamanho do título */
+                margin-bottom: 20px;
+            }
+
+            .main-container {
+                padding: 10px; /* Reduz o espaçamento do container principal */
+            }
+
+            .button {
+                font-size: 1em; /* Reduz o tamanho da fonte dos botões */
+                padding: 12px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="logo-container">
+            <img src="arena2.png" alt="Logo Arena Competidor" class="logo">
+        </div>
+    </div>
+
+    <div class="main-container">
+        <h1 class="title">Selecione o tipo de checagem</h1>
+        <div class="button-container">
+            <a href="checagemcat.html" class="button">Checagem por Categoria</a>
+            <a href="checagemabs.html" class="button">Checagem Absoluto</a>
+        </div>
+    </div>
+
+</body>
+</html>
