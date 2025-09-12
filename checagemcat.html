@@ -60,6 +60,26 @@
             margin-bottom: 30px;
         }
 
+        /* Estilos para a área de filtros */
+        .filtros {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .filtros label {
+            font-weight: bold;
+            color: #555;
+        }
+        .filtros select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+
         /* Estilos para os títulos de categoria */
         .category-title {
             background-color: #dc3545;
@@ -140,6 +160,15 @@
                 font-size: 1em;
                 padding: 8px;
             }
+            
+            .filtros {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .filtros label, .filtros select {
+                width: 100%;
+                text-align: center;
+            }
 
             /* Oculta o cabeçalho da tabela (thead) em mobile */
             table thead {
@@ -194,6 +223,22 @@
     <div class="main-container">
         <div class="checagem-container">
             <h1>Lista de Atletas por Categoria</h1>
+
+            <div class="filtros">
+                <div>
+                    <label for="faixa-filtro">Faixa:</label>
+                    <select id="faixa-filtro"></select>
+                </div>
+                <div>
+                    <label for="peso-filtro">Peso:</label>
+                    <select id="peso-filtro"></select>
+                </div>
+                <div>
+                    <label for="idade-filtro">Idade:</label>
+                    <select id="idade-filtro"></select>
+                </div>
+            </div>
+
             <div id="categorias">
             </div>
         </div>
@@ -202,90 +247,144 @@
     <script>
         const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQZQSnHrELe0fIBczmqwlFgnovIXSR7LDcdVWyecazTGrp6TBl3ceVXLP-MS-A4xXEWPvAdodUXZygS/pub?output=csv';
         
+        let atletas = [];
+
         async function carregarDados() {
             try {
                 const response = await fetch(sheetUrl);
                 const csvData = await response.text();
                 
                 const linhas = csvData.split('\n').slice(1).filter(linha => linha.trim() !== '');
-                const atletas = linhas.map(linha => {
+                atletas = linhas.map(linha => {
                     const colunas = linha.split(',');
                     return {
-                        nome: colunas[1].trim(),     // Agora pega a 2ª coluna (índice 1)
-                        equipe: colunas[2].trim(),   // Agora pega a 3ª coluna (índice 2)
-                        professor: colunas[3].trim(),// Agora pega a 4ª coluna (índice 3)
-                        faixa: colunas[4].trim(),    // Agora pega a 5ª coluna (índice 4)
-                        idade: colunas[5].trim(),    // Agora pega a 6ª coluna (índice 5)
-                        peso: colunas[6].trim(),     // Agora pega a 7ª coluna (índice 6)
-                        genero: colunas[7] ? colunas[7].trim() : 'N/A' // Agora pega a 8ª coluna (índice 7)
+                        nome: colunas[1].trim(),
+                        equipe: colunas[2].trim(),
+                        professor: colunas[3].trim(),
+                        faixa: colunas[4].trim(),
+                        idade: colunas[5].trim(),
+                        peso: colunas[6].trim(),
+                        genero: colunas[7] ? colunas[7].trim() : 'N/A'
                     };
                 });
                 
-                // Agrupa atletas por gênero, depois por faixa, peso e idade
-                const gruposPorGenero = {};
-                atletas.forEach(atleta => {
-                    const genero = atleta.genero;
-                    if (!gruposPorGenero[genero]) {
-                        gruposPorGenero[genero] = {};
-                    }
-                    const chaveCategoria = `${atleta.faixa} - ${atleta.peso} - ${atleta.idade}`;
-                    if (!gruposPorGenero[genero][chaveCategoria]) {
-                        gruposPorGenero[genero][chaveCategoria] = [];
-                    }
-                    gruposPorGenero[genero][chaveCategoria].push(atleta);
-                });
-                
-                const container = document.getElementById('categorias');
-                
-                // Itera sobre os grupos e cria uma tabela para cada categoria
-                for (const genero in gruposPorGenero) {
-                    if (gruposPorGenero.hasOwnProperty(genero)) {
-                        const generoTitulo = document.createElement('h2');
-                        generoTitulo.className = 'gender-title';
-                        generoTitulo.textContent = genero.toUpperCase();
-                        container.appendChild(generoTitulo);
-                        
-                        const gruposDaFaixa = gruposPorGenero[genero];
-                        for (const chave in gruposDaFaixa) {
-                            if (gruposDaFaixa.hasOwnProperty(chave)) {
-                                const categoriaTitulo = document.createElement('h3');
-                                categoriaTitulo.className = 'category-title';
-                                categoriaTitulo.textContent = chave;
-                                container.appendChild(categoriaTitulo);
-                                
-                                const tabela = document.createElement('table');
-                                tabela.innerHTML = `
-                                    <thead>
-                                        <tr>
-                                            <th>Nome</th>
-                                            <th>Equipe</th>
-                                            <th>Professor</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                `;
-                                
-                                const tbody = tabela.querySelector('tbody');
-                                gruposDaFaixa[chave].forEach(atleta => {
-                                    const tr = document.createElement('tr');
-                                    tr.innerHTML = `
-                                        <td data-label="Nome">${atleta.nome}</td>
-                                        <td data-label="Equipe">${atleta.equipe}</td>
-                                        <td data-label="Professor">${atleta.professor}</td>
-                                    `;
-                                    tbody.appendChild(tr);
-                                });
-                                
-                                container.appendChild(tabela);
-                            }
-                        }
-                    }
-                }
+                preencherFiltros(atletas);
+                aplicarFiltros();
 
             } catch (error) {
                 console.error("Erro ao carregar os dados da planilha:", error);
                 const container = document.getElementById('categorias');
                 container.innerHTML = '<p style="text-align:center;">Não foi possível carregar a lista de atletas. Verifique se o link da planilha está correto e se ela foi publicada para acesso público.</p>';
+            }
+        }
+
+        function preencherFiltros(atletas) {
+            const faixas = [...new Set(atletas.map(a => a.faixa))].sort();
+            const pesos = [...new Set(atletas.map(a => a.peso))].sort();
+            const idades = [...new Set(atletas.map(a => a.idade))].sort();
+
+            const faixaFiltro = document.getElementById('faixa-filtro');
+            const pesoFiltro = document.getElementById('peso-filtro');
+            const idadeFiltro = document.getElementById('idade-filtro');
+
+            preencherSelect(faixaFiltro, faixas);
+            preencherSelect(pesoFiltro, pesos);
+            preencherSelect(idadeFiltro, idades);
+
+            faixaFiltro.addEventListener('change', aplicarFiltros);
+            pesoFiltro.addEventListener('change', aplicarFiltros);
+            idadeFiltro.addEventListener('change', aplicarFiltros);
+        }
+
+        function preencherSelect(selectElement, options) {
+            selectElement.innerHTML = '<option value="Todos">Todos</option>';
+            options.forEach(option => {
+                const opt = document.createElement('option');
+                opt.value = option;
+                opt.textContent = option;
+                selectElement.appendChild(opt);
+            });
+        }
+        
+        function aplicarFiltros() {
+            const faixaSelecionada = document.getElementById('faixa-filtro').value;
+            const pesoSelecionado = document.getElementById('peso-filtro').value;
+            const idadeSelecionada = document.getElementById('idade-filtro').value;
+            
+            const atletasFiltrados = atletas.filter(atleta => {
+                const faixaMatch = faixaSelecionada === 'Todos' || atleta.faixa === faixaSelecionada;
+                const pesoMatch = pesoSelecionado === 'Todos' || atleta.peso === pesoSelecionado;
+                const idadeMatch = idadeSelecionada === 'Todos' || atleta.idade === idadeSelecionada;
+                return faixaMatch && pesoMatch && idadeMatch;
+            });
+            
+            renderizarCategorias(atletasFiltrados);
+        }
+
+        function renderizarCategorias(atletasParaRenderizar) {
+            const container = document.getElementById('categorias');
+            container.innerHTML = '';
+            
+            if (atletasParaRenderizar.length === 0) {
+                container.innerHTML = '<p style="text-align:center;">Nenhum atleta encontrado com os filtros selecionados.</p>';
+                return;
+            }
+
+            const gruposPorGenero = {};
+            atletasParaRenderizar.forEach(atleta => {
+                const genero = atleta.genero;
+                if (!gruposPorGenero[genero]) {
+                    gruposPorGenero[genero] = {};
+                }
+                const chaveCategoria = `${atleta.faixa} - ${atleta.peso} - ${atleta.idade}`;
+                if (!gruposPorGenero[genero][chaveCategoria]) {
+                    gruposPorGenero[genero][chaveCategoria] = [];
+                }
+                gruposPorGenero[genero][chaveCategoria].push(atleta);
+            });
+            
+            for (const genero in gruposPorGenero) {
+                if (gruposPorGenero.hasOwnProperty(genero)) {
+                    const generoTitulo = document.createElement('h2');
+                    generoTitulo.className = 'gender-title';
+                    generoTitulo.textContent = genero.toUpperCase();
+                    container.appendChild(generoTitulo);
+                    
+                    const gruposDaFaixa = gruposPorGenero[genero];
+                    for (const chave in gruposDaFaixa) {
+                        if (gruposDaFaixa.hasOwnProperty(chave)) {
+                            const categoriaTitulo = document.createElement('h3');
+                            categoriaTitulo.className = 'category-title';
+                            categoriaTitulo.textContent = chave;
+                            container.appendChild(categoriaTitulo);
+                            
+                            const tabela = document.createElement('table');
+                            tabela.innerHTML = `
+                                <thead>
+                                    <tr>
+                                        <th>Nome</th>
+                                        <th>Equipe</th>
+                                        <th>Professor</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            `;
+                            
+                            const tbody = tabela.querySelector('tbody');
+                            gruposDaFaixa[chave].forEach(atleta => {
+                                const tr = document.createElement('tr');
+                                tr.innerHTML = `
+                                    <td data-label="Nome">${atleta.nome}</td>
+                                    <td data-label="Equipe">${atleta.equipe}</td>
+                                    <td data-label="Professor">${atleta.professor}</td>
+                                `;
+                                tbody.appendChild(tr);
+                            });
+                            
+                            container.appendChild(tabela);
+                        }
+                    }
+                }
             }
         }
         
