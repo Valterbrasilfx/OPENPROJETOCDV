@@ -200,7 +200,6 @@
     </div>
 
     <script>
-        // Por favor, garanta que este URL esteja publicamente acessível e configurado para exportar como CSV
         const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQZQSnHrELe0fIBczmqwlFgnovIXSR7LDcdVWyecazTGrp6TBl3ceVXLP-MS-A4xXEWPvAdodUXZygS/pub?output=csv';
         
         async function carregarDados() {
@@ -212,13 +211,13 @@
                 const atletas = linhas.map(linha => {
                     const colunas = linha.split(',');
                     return {
-                        nome: colunas[0].trim(),
-                        equipe: colunas[1].trim(), // Nova coluna: Equipe
-                        professor: colunas[2].trim(),
-                        faixa: colunas[3].trim(),
-                        idade: colunas[4].trim(), // Nova coluna: Categoria Idade
-                        peso: colunas[5].trim(),
-                        genero: colunas[6] ? colunas[6].trim() : 'N/A' 
+                        nome: colunas[1].trim(),     // Agora pega a 2ª coluna (índice 1)
+                        equipe: colunas[2].trim(),   // Agora pega a 3ª coluna (índice 2)
+                        professor: colunas[3].trim(),// Agora pega a 4ª coluna (índice 3)
+                        faixa: colunas[4].trim(),    // Agora pega a 5ª coluna (índice 4)
+                        idade: colunas[5].trim(),    // Agora pega a 6ª coluna (índice 5)
+                        peso: colunas[6].trim(),     // Agora pega a 7ª coluna (índice 6)
+                        genero: colunas[7] ? colunas[7].trim() : 'N/A' // Agora pega a 8ª coluna (índice 7)
                     };
                 });
                 
@@ -259,8 +258,8 @@
                                     <thead>
                                         <tr>
                                             <th>Nome</th>
-                                            <th>Professor</th>
                                             <th>Equipe</th>
+                                            <th>Professor</th>
                                         </tr>
                                     </thead>
                                     <tbody></tbody>
@@ -271,8 +270,8 @@
                                     const tr = document.createElement('tr');
                                     tr.innerHTML = `
                                         <td data-label="Nome">${atleta.nome}</td>
-                                        <td data-label="Professor">${atleta.professor}</td>
                                         <td data-label="Equipe">${atleta.equipe}</td>
+                                        <td data-label="Professor">${atleta.professor}</td>
                                     `;
                                     tbody.appendChild(tr);
                                 });
