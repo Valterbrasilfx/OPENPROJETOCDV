@@ -200,7 +200,8 @@
     </div>
 
     <script>
-        const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQZQSnHrELe0fIBczmqwlFgnovIXSR7LDcdWWyecazTGrp6TBl3ceVXLP-MS-A4xXEWPvAdodUXZygS/pub?output=csv';
+        // Por favor, garanta que este URL esteja publicamente acessível e configurado para exportar como CSV
+        const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQZQSnHrELe0fIBczmqwlFgnovIXSR7LDcdVWyecazTGrp6TBl3ceVXLP-MS-A4xXEWPvAdodUXZygS/pub?output=csv';
         
         async function carregarDados() {
             try {
@@ -211,13 +212,13 @@
                 const atletas = linhas.map(linha => {
                     const colunas = linha.split(',');
                     return {
-                        nome: colunas[1].trim(),
-                        faixa: colunas[2].trim(),
-                        peso: colunas[3].trim(),
-                        idade: colunas[4].trim(),
-                        professor: colunas[5].trim(),
-                        academia: colunas[6].trim(),
-                        genero: colunas[7] ? colunas[7].trim() : 'N/A' // Assuming gender is in column 7
+                        nome: colunas[0].trim(),
+                        equipe: colunas[1].trim(), // Nova coluna: Equipe
+                        professor: colunas[2].trim(),
+                        faixa: colunas[3].trim(),
+                        idade: colunas[4].trim(), // Nova coluna: Categoria Idade
+                        peso: colunas[5].trim(),
+                        genero: colunas[6] ? colunas[6].trim() : 'N/A' 
                     };
                 });
                 
@@ -259,7 +260,7 @@
                                         <tr>
                                             <th>Nome</th>
                                             <th>Professor</th>
-                                            <th>Academia</th>
+                                            <th>Equipe</th>
                                         </tr>
                                     </thead>
                                     <tbody></tbody>
@@ -271,7 +272,7 @@
                                     tr.innerHTML = `
                                         <td data-label="Nome">${atleta.nome}</td>
                                         <td data-label="Professor">${atleta.professor}</td>
-                                        <td data-label="Academia">${atleta.academia}</td>
+                                        <td data-label="Equipe">${atleta.equipe}</td>
                                     `;
                                     tbody.appendChild(tr);
                                 });
@@ -285,7 +286,7 @@
             } catch (error) {
                 console.error("Erro ao carregar os dados da planilha:", error);
                 const container = document.getElementById('categorias');
-                container.innerHTML = '<p style="text-align:center;">Não foi possível carregar a lista de atletas.</p>';
+                container.innerHTML = '<p style="text-align:center;">Não foi possível carregar a lista de atletas. Verifique se o link da planilha está correto e se ela foi publicada para acesso público.</p>';
             }
         }
         
