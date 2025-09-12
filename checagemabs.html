@@ -60,7 +60,6 @@
             margin-bottom: 30px;
         }
 
-        /* Estilos para os títulos de categoria */
         .category-title {
             background-color: #dc3545;
             color: #fff;
@@ -105,7 +104,6 @@
             font-size: 1.5em;
         }
 
-        /* --- Estilos para dispositivos móveis --- */
         @media screen and (max-width: 768px) {
             .header {
                 flex-direction: column;
@@ -141,12 +139,10 @@
                 padding: 8px;
             }
 
-            /* Oculta o cabeçalho da tabela (thead) em mobile */
             table thead {
                 display: none;
             }
 
-            /* Transforma as linhas da tabela em blocos */
             table, tbody, tr, td {
                 display: block;
                 width: 100%;
@@ -165,10 +161,9 @@
             td {
                 padding: 12px;
                 position: relative;
-                padding-left: 100px; /* Espaço para o label */
+                padding-left: 100px;
             }
 
-            /* Cria o "label" para cada célula, usando o data-label */
             td::before {
                 content: attr(data-label);
                 position: absolute;
@@ -200,7 +195,7 @@
     </div>
 
     <script>
-        const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQZQSnHrELe0fIBczmqwlFgnovIXSR7LDcdVWyecazTGrp6TBl3ceVXSR7LDcdVWyecazTGrp6TBl3ceVXLP-MS-A4xXEWPvAdodUXZygS/pub?output=csv';
+        const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQZQSnHrELe0fIBczmqwlFgnovIXSR7LDcdVWyecazTGrp6TBl3ceVXLP-MS-A4xXEWPvAdodUXZygS/pub?output=csv';
 
         async function carregarDados() {
             try {
@@ -208,20 +203,21 @@
                 const csvData = await response.text();
                 
                 const linhas = csvData.split('\n').slice(1).filter(linha => linha.trim() !== '');
+                
                 const atletas = linhas.map(linha => {
                     const colunas = linha.split(',');
                     return {
                         nome: colunas[1].trim(),
-                        faixa: colunas[2].trim(),
-                        peso: colunas[3].trim(),
-                        idade: colunas[4].trim(),
-                        professor: colunas[5].trim(),
-                        academia: colunas[6].trim(),
-                        genero: colunas[7] ? colunas[7].trim() : 'N/A' // Assuming gender is in column 7
+                        equipe: colunas[2].trim(),
+                        professor: colunas[3].trim(),
+                        faixa: colunas[4].trim(),
+                        idade: colunas[5].trim(),
+                        peso: colunas[6].trim(),
+                        genero: colunas[7] ? colunas[7].trim() : 'N/A',
+                        absoluto: colunas[8] ? colunas[8].trim() : 'N/A'
                     };
-                });
-                
-                // Group athletes into the specific absolute categories
+                }).filter(atleta => atleta.absoluto.toLowerCase() === 'sim');
+
                 const gruposAbsoluto = {
                     'Masculino': {
                         'Faixa Marrom / Preta (Adulto e Master)': [],
@@ -240,21 +236,21 @@
                 };
 
                 atletas.forEach(atleta => {
-                    const genero = atleta.genero;
-                    const faixa = atleta.faixa;
-                    const idade = atleta.idade;
+                    const genero = atleta.genero.toLowerCase(); // Ajustado para ser case-insensitive
+                    const faixa = atleta.faixa.toLowerCase();   // Ajustado para ser case-insensitive
+                    const idade = atleta.idade.toLowerCase();   // Ajustado para ser case-insensitive
 
-                    if (genero === 'Masculino' || genero === 'Feminino') {
-                        if ((faixa === 'Marrom' || faixa === 'Preta') && (idade === 'Adulto' || idade === 'Master')) {
-                            gruposAbsoluto[genero]['Faixa Marrom / Preta (Adulto e Master)'].push(atleta);
-                        } else if (faixa === 'Branca' && idade === 'Adulto') {
-                            gruposAbsoluto[genero]['Faixa Branca (Adulto)'].push(atleta);
-                        } else if ((faixa === 'Azul' || faixa === 'Roxa') && (idade === 'Adulto' || idade === 'Master')) {
-                            gruposAbsoluto[genero]['Faixa Azul / Roxa (Adulto e Master)'].push(atleta);
-                        } else if (faixa === 'Azul' && idade.includes('Juvenil')) {
-                            gruposAbsoluto[genero]['Juvenil Faixa Azul'].push(atleta);
-                        } else if (faixa === 'Branca' && idade.includes('Juvenil')) {
-                            gruposAbsoluto[genero]['Juvenil Faixa Branca'].push(atleta);
+                    if (genero === 'masculino' || genero === 'feminino') {
+                        if ((faixa.includes('marrom') || faixa.includes('preta')) && (idade.includes('adulto') || idade.includes('master'))) {
+                            gruposAbsoluto[atleta.genero]['Faixa Marrom / Preta (Adulto e Master)'].push(atleta);
+                        } else if (faixa.includes('branca') && idade.includes('adulto')) {
+                            gruposAbsoluto[atleta.genero]['Faixa Branca (Adulto)'].push(atleta);
+                        } else if ((faixa.includes('azul') || faixa.includes('roxa')) && (idade.includes('adulto') || idade.includes('master'))) {
+                            gruposAbsoluto[atleta.genero]['Faixa Azul / Roxa (Adulto e Master)'].push(atleta);
+                        } else if (faixa.includes('azul') && idade.includes('juvenil')) {
+                            gruposAbsoluto[atleta.genero]['Juvenil Faixa Azul'].push(atleta);
+                        } else if (faixa.includes('branca') && idade.includes('juvenil')) {
+                            gruposAbsoluto[atleta.genero]['Juvenil Faixa Branca'].push(atleta);
                         }
                     }
                 });
@@ -281,8 +277,8 @@
                                     <thead>
                                         <tr>
                                             <th>Nome</th>
+                                            <th>Equipe</th>
                                             <th>Professor</th>
-                                            <th>Academia</th>
                                         </tr>
                                     </thead>
                                     <tbody></tbody>
@@ -293,8 +289,8 @@
                                     const tr = document.createElement('tr');
                                     tr.innerHTML = `
                                         <td data-label="Nome">${atleta.nome}</td>
+                                        <td data-label="Equipe">${atleta.equipe}</td>
                                         <td data-label="Professor">${atleta.professor}</td>
-                                        <td data-label="Academia">${atleta.academia}</td>
                                     `;
                                     tbody.appendChild(tr);
                                 });
@@ -308,7 +304,7 @@
             } catch (error) {
                 console.error("Erro ao carregar os dados da planilha:", error);
                 const container = document.getElementById('categorias');
-                container.innerHTML = '<p style="text-align:center;">Não foi possível carregar a lista de atletas.</p>';
+                container.innerHTML = '<p style="text-align:center;">Não foi possível carregar a lista de atletas. Verifique se o link da planilha está correto e se ela foi publicada para acesso público.</p>';
             }
         }
         
