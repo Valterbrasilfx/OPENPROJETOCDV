@@ -226,14 +226,14 @@
                 const gruposAbsoluto = {
                     'Masculino': {
                         'Faixa Marrom / Preta (Adulto e Master)': [],
-                        'Faixa Branca (Adulto)': [],
+                        'Faixa Branca (Adulto e Master)': [],
                         'Faixa Azul / Roxa (Adulto e Master)': [],
                         'Juvenil Faixa Azul': [],
                         'Juvenil Faixa Branca': []
                     },
                     'Feminino': {
                         'Faixa Marrom / Preta (Adulto e Master)': [],
-                        'Faixa Branca (Adulto)': [],
+                        'Faixa Branca (Adulto e Master)': [],
                         'Faixa Azul / Roxa (Adulto e Master)': [],
                         'Juvenil Faixa Azul': [],
                         'Juvenil Faixa Branca': []
@@ -252,8 +252,8 @@
                     if (genero.includes('masculino') || genero.includes('feminino')) {
                         if ((faixa.includes('marrom') || faixa.includes('preta')) && (idade.includes('adulto') || idade.includes('master'))) {
                             gruposAbsoluto[generoCapitalizado]['Faixa Marrom / Preta (Adulto e Master)'].push(atleta);
-                        } else if (faixa.includes('branca') && idade.includes('adulto')) {
-                            gruposAbsoluto[generoCapitalizado]['Faixa Branca (Adulto)'].push(atleta);
+                        } else if (faixa.includes('branca') && (idade.includes('adulto') || idade.includes('master'))) {
+                            gruposAbsoluto[generoCapitalizado]['Faixa Branca (Adulto e Master)'].push(atleta);
                         } else if ((faixa.includes('azul') || faixa.includes('roxa')) && (idade.includes('adulto') || idade.includes('master'))) {
                             gruposAbsoluto[generoCapitalizado]['Faixa Azul / Roxa (Adulto e Master)'].push(atleta);
                         } else if (faixa.includes('azul') && idade.includes('juvenil')) {
