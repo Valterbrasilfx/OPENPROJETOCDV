@@ -43,12 +43,9 @@
             display: flex;
             justify-content: center;
             padding: 40px 20px;
-            min-height: calc(100vh - 100px); /* Adjust height to fill the screen better */
-            align-items: center; /* Center the content vertically */
-            text-align: center;
         }
 
-        .message-container {
+        .form-container {
             background-color: #fff;
             padding: 30px;
             border-radius: 8px;
@@ -58,17 +55,59 @@
             border-top: 5px solid #dc3545;
         }
 
-        .message-container h2 {
+        .form-container h2 {
             text-align: center;
             color: #dc3545;
             margin-top: 0;
             margin-bottom: 25px;
         }
 
-        .message-container p {
-            font-size: 1.2em;
-            color: #555;
+        .info-atleta {
+            background-color: #f0f0f0;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
             line-height: 1.6;
+        }
+
+        .info-atleta p {
+            margin: 5px 0;
+        }
+
+        .form-container label {
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .form-container select, .form-container input[type="checkbox"] {
+            margin-bottom: 20px;
+        }
+
+        .absoluto-checkbox {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .absoluto-checkbox input {
+            margin-right: 10px;
+        }
+        
+        .form-container button {
+            padding: 12px;
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .form-container button:hover {
+            background-color: #a71d2a;
         }
         
         /* ------------------------------------------- */
@@ -88,13 +127,12 @@
 
             .container {
                 padding: 20px 10px;
-                min-height: calc(100vh - 80px); /* Adjust for mobile */
             }
 
-            .message-container {
+            .form-container {
                 padding: 15px;
                 box-shadow: none;
-                border-top: none;
+                border-top: none; /* Remove a linha de borda vermelha no mobile para uma aparência mais limpa */
             }
         }
     </style>
@@ -108,11 +146,8 @@
     </div>
 
     <div class="container">
-        <div class="message-container">
-            <h2>Inscrições Temporariamente Suspensas 🚧</h2>
-            <p>
-                As inscrições para este evento estão <strong>temporariamente suspensas</strong>. Por favor, aguarde a liberação da administração para continuar. Fique de olho em nossas redes sociais para atualizações!
-            </p>
+        <div class="form-container">
+            <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdtQDnTZ9TCGIPpO98r7Un6-eQoYIRUXJ1WI2yPvtce6ftb-w/viewform?embedded=true" width="100%" height="2187" frameborder="0" marginheight="0" marginwidth="0">Carregando…</iframe>
         </div>
     </div>
 
