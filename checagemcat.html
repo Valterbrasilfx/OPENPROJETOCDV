@@ -194,7 +194,7 @@
             td {
                 padding: 12px;
                 position: relative;
-                padding-left: 100px; /* Espaço para o label */
+                padding-left: 100px;
             }
 
             /* Cria o "label" para cada célula, usando o data-label */
@@ -226,16 +226,8 @@
 
             <div class="filtros">
                 <div>
-                    <label for="faixa-filtro">Faixa:</label>
-                    <select id="faixa-filtro"></select>
-                </div>
-                <div>
                     <label for="peso-filtro">Peso:</label>
                     <select id="peso-filtro"></select>
-                </div>
-                <div>
-                    <label for="idade-filtro">Idade:</label>
-                    <select id="idade-filtro"></select>
                 </div>
             </div>
 
@@ -278,22 +270,33 @@
             }
         }
 
+        // --- Mapeia a faixa e a idade para uma única categoria combinada ---
+        function getCategoriaCombinada(atleta) {
+            let categoriaFaixa = atleta.faixa;
+
+            const faixaLower = atleta.faixa.toLowerCase();
+            if (faixaLower === 'azul' || faixaLower === 'roxa') {
+                categoriaFaixa = 'Azul / Roxa';
+            } else if (faixaLower === 'marrom' || faixaLower === 'preta') {
+                categoriaFaixa = 'Marrom / Preta';
+            }
+            
+            const idadeLower = atleta.idade.toLowerCase();
+            // Unifica as categorias Adulto e todos os Masters, independente do número
+            if (idadeLower.includes('adulto') || idadeLower.includes('master')) {
+                return `${categoriaFaixa} Adulto / Master`;
+            }
+
+            // Para outras idades (Infantil, Juvenil, etc.), a idade faz parte do nome da categoria.
+            return `${categoriaFaixa} ${atleta.idade}`;
+        }
+        // -------------------------------------------------------------------
+
         function preencherFiltros(atletas) {
-            const faixas = [...new Set(atletas.map(a => a.faixa))].sort();
             const pesos = [...new Set(atletas.map(a => a.peso))].sort();
-            const idades = [...new Set(atletas.map(a => a.idade))].sort();
-
-            const faixaFiltro = document.getElementById('faixa-filtro');
             const pesoFiltro = document.getElementById('peso-filtro');
-            const idadeFiltro = document.getElementById('idade-filtro');
-
-            preencherSelect(faixaFiltro, faixas);
             preencherSelect(pesoFiltro, pesos);
-            preencherSelect(idadeFiltro, idades);
-
-            faixaFiltro.addEventListener('change', aplicarFiltros);
             pesoFiltro.addEventListener('change', aplicarFiltros);
-            idadeFiltro.addEventListener('change', aplicarFiltros);
         }
 
         function preencherSelect(selectElement, options) {
@@ -307,15 +310,11 @@
         }
         
         function aplicarFiltros() {
-            const faixaSelecionada = document.getElementById('faixa-filtro').value;
             const pesoSelecionado = document.getElementById('peso-filtro').value;
-            const idadeSelecionada = document.getElementById('idade-filtro').value;
             
             const atletasFiltrados = atletas.filter(atleta => {
-                const faixaMatch = faixaSelecionada === 'Todos' || atleta.faixa === faixaSelecionada;
                 const pesoMatch = pesoSelecionado === 'Todos' || atleta.peso === pesoSelecionado;
-                const idadeMatch = idadeSelecionada === 'Todos' || atleta.idade === idadeSelecionada;
-                return faixaMatch && pesoMatch && idadeMatch;
+                return pesoMatch;
             });
             
             renderizarCategorias(atletasFiltrados);
@@ -336,7 +335,8 @@
                 if (!gruposPorGenero[genero]) {
                     gruposPorGenero[genero] = {};
                 }
-                const chaveCategoria = `${atleta.faixa} - ${atleta.peso} - ${atleta.idade}`;
+                
+                const chaveCategoria = `${getCategoriaCombinada(atleta)} - ${atleta.peso}`;
                 if (!gruposPorGenero[genero][chaveCategoria]) {
                     gruposPorGenero[genero][chaveCategoria] = [];
                 }
@@ -351,39 +351,39 @@
                     container.appendChild(generoTitulo);
                     
                     const gruposDaFaixa = gruposPorGenero[genero];
-                    for (const chave in gruposDaFaixa) {
-                        if (gruposDaFaixa.hasOwnProperty(chave)) {
-                            const categoriaTitulo = document.createElement('h3');
-                            categoriaTitulo.className = 'category-title';
-                            categoriaTitulo.textContent = chave;
-                            container.appendChild(categoriaTitulo);
-                            
-                            const tabela = document.createElement('table');
-                            tabela.innerHTML = `
-                                <thead>
-                                    <tr>
-                                        <th>Nome</th>
-                                        <th>Equipe</th>
-                                        <th>Professor</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
+                    const chavesOrdenadas = Object.keys(gruposDaFaixa).sort();
+
+                    chavesOrdenadas.forEach(chave => {
+                        const categoriaTitulo = document.createElement('h3');
+                        categoriaTitulo.className = 'category-title';
+                        categoriaTitulo.textContent = chave.toUpperCase();
+                        container.appendChild(categoriaTitulo);
+                        
+                        const tabela = document.createElement('table');
+                        tabela.innerHTML = `
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Equipe</th>
+                                    <th>Professor</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        `;
+                        
+                        const tbody = tabela.querySelector('tbody');
+                        gruposDaFaixa[chave].forEach(atleta => {
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td data-label="Nome">${atleta.nome}</td>
+                                <td data-label="Equipe">${atleta.equipe}</td>
+                                <td data-label="Professor">${atleta.professor}</td>
                             `;
-                            
-                            const tbody = tabela.querySelector('tbody');
-                            gruposDaFaixa[chave].forEach(atleta => {
-                                const tr = document.createElement('tr');
-                                tr.innerHTML = `
-                                    <td data-label="Nome">${atleta.nome}</td>
-                                    <td data-label="Equipe">${atleta.equipe}</td>
-                                    <td data-label="Professor">${atleta.professor}</td>
-                                `;
-                                tbody.appendChild(tr);
-                            });
-                            
-                            container.appendChild(tabela);
-                        }
-                    }
+                            tbody.appendChild(tr);
+                        });
+                        
+                        container.appendChild(tabela);
+                    });
                 }
             }
         }
