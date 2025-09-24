@@ -60,7 +60,6 @@
             margin-bottom: 30px;
         }
 
-        /* Estilos para a área de filtros */
         .filtros {
             display: flex;
             flex-wrap: wrap;
@@ -68,10 +67,12 @@
             gap: 20px;
             margin-bottom: 20px;
         }
+
         .filtros label {
             font-weight: bold;
             color: #555;
         }
+
         .filtros select {
             padding: 8px;
             border: 1px solid #ccc;
@@ -80,7 +81,6 @@
             cursor: pointer;
         }
 
-        /* Estilos para os títulos de categoria */
         .category-title {
             background-color: #dc3545;
             color: #fff;
@@ -113,7 +113,7 @@
             background-color: #f9f9f9;
         }
 
-        .gender-title {
+        .sexo-title {
             background-color: #000;
             color: #fff;
             font-weight: bold;
@@ -151,7 +151,7 @@
                 font-size: 1.5em;
             }
 
-            .gender-title {
+            .sexo-title {
                 font-size: 1.2em;
                 padding: 10px;
             }
@@ -170,12 +170,10 @@
                 text-align: center;
             }
 
-            /* Oculta o cabeçalho da tabela (thead) em mobile */
             table thead {
                 display: none;
             }
 
-            /* Transforma as linhas da tabela em blocos */
             table, tbody, tr, td {
                 display: block;
                 width: 100%;
@@ -197,7 +195,6 @@
                 padding-left: 100px;
             }
 
-            /* Cria o "label" para cada célula, usando o data-label */
             td::before {
                 content: attr(data-label);
                 position: absolute;
@@ -246,19 +243,54 @@
                 const response = await fetch(sheetUrl);
                 const csvData = await response.text();
                 
-                const linhas = csvData.split('\n').slice(1).filter(linha => linha.trim() !== '');
-                atletas = linhas.map(linha => {
-                    const colunas = linha.split(',');
-                    return {
-                        nome: colunas[1].trim(),
-                        equipe: colunas[2].trim(),
-                        professor: colunas[3].trim(),
-                        faixa: colunas[4].trim(),
-                        idade: colunas[5].trim(),
-                        peso: colunas[6].trim(),
-                        genero: colunas[7] ? colunas[7].trim() : 'N/A'
-                    };
-                });
+                const parseCSV = (csv) => {
+                    const records = [];
+                    const lines = csv.split('\n');
+                    
+                    for (let i = 1; i < lines.length; i++) {
+                        const line = lines[i].trim();
+                        if (!line) continue;
+                
+                        const values = [];
+                        let inQuote = false;
+                        let current = '';
+                
+                        for (let j = 0; j < line.length; j++) {
+                            const char = line[j];
+                            if (char === '"' && (j === 0 || line[j - 1] === ',')) {
+                                inQuote = true;
+                            } else if (char === '"' && (j === line.length - 1 || line[j + 1] === ',')) {
+                                inQuote = false;
+                            } else if (char === ',' && !inQuote) {
+                                values.push(current.trim());
+                                current = '';
+                            } else {
+                                current += char;
+                            }
+                        }
+                        values.push(current.trim());
+                
+                        if (values.length >= 8) {
+                            records.push({
+                                nome: values[1],
+                                equipe: values[2],
+                                professor: values[3],
+                                faixa: values[4],
+                                categoria: values[5],
+                                peso: values[6],
+                                sexo: values[7]
+                            });
+                        }
+                    }
+                    return records;
+                };
+
+                atletas = parseCSV(csvData);
+                
+                if (atletas.length === 0) {
+                    document.getElementById('categorias').innerHTML = '<p style="text-align:center;">Nenhum atleta encontrado na planilha. Certifique-se de que a planilha não está vazia.</p>';
+                    return;
+                }
                 
                 preencherFiltros(atletas);
                 aplicarFiltros();
@@ -270,32 +302,52 @@
             }
         }
 
-        // --- Mapeia a faixa e a idade para uma única categoria combinada ---
-        function getCategoriaCombinada(atleta) {
-            let categoriaFaixa = atleta.faixa;
-
-            const faixaLower = atleta.faixa.toLowerCase();
-            if (faixaLower === 'azul' || faixaLower === 'roxa') {
-                categoriaFaixa = 'Azul / Roxa';
-            } else if (faixaLower === 'marrom' || faixaLower === 'preta') {
-                categoriaFaixa = 'Marrom / Preta';
-            }
+        // Função de agrupamento de peso mais flexível
+        function getPesoCombinado(peso) {
+            if (!peso) return 'OUTROS';
+            const pesoLower = peso.toLowerCase();
             
-            const idadeLower = atleta.idade.toLowerCase();
-            // Unifica as categorias Adulto e todos os Masters, independente do número
-            if (idadeLower.includes('adulto') || idadeLower.includes('master')) {
-                return `${categoriaFaixa} Adulto / Master`;
+            if (pesoLower.includes('galo') || pesoLower.includes('pluma') || pesoLower.includes('pena')) {
+                return 'LEVE';
+            } else if (pesoLower.includes('leve') || pesoLower.includes('médio') || pesoLower.includes('meio-pesado')) {
+                return 'MÉDIO';
+            } else if (pesoLower.includes('pesado') || pesoLower.includes('super-pesado') || pesoLower.includes('pesadíssimo')) {
+                return 'PESADO';
+            }
+            return 'OUTROS';
+        }
+        
+        // Função de agrupamento de categoria mais flexível
+        function getCategoriaCombinada(atleta) {
+            const faixaLower = atleta.faixa.toLowerCase();
+            const categoriaLower = atleta.categoria.toLowerCase();
+            let categoriaFinal = '';
+
+            if (faixaLower.includes('branca') || faixaLower.includes('cinza')) {
+                categoriaFinal = 'Branca / Cinza';
+            } else if (faixaLower.includes('amarela') || faixaLower.includes('laranja')) {
+                categoriaFinal = 'Amarela / Laranja';
+            } else if (faixaLower.includes('verde')) {
+                categoriaFinal = 'Verde';
+            } else if (faixaLower.includes('azul') || faixaLower.includes('roxa')) {
+                categoriaFinal = 'Azul / Roxa';
+            } else if (faixaLower.includes('marrom') || faixaLower.includes('preta')) {
+                categoriaFinal = 'Marrom / Preta';
+            } else {
+                categoriaFinal = atleta.faixa;
             }
 
-            // Para outras idades (Infantil, Juvenil, etc.), a idade faz parte do nome da categoria.
-            return `${categoriaFaixa} ${atleta.idade}`;
+            if (categoriaLower.includes('adulto') || categoriaLower.includes('master')) {
+                return `${categoriaFinal} Adulto / Master`;
+            } else {
+                return `${categoriaFinal} ${atleta.categoria}`;
+            }
         }
-        // -------------------------------------------------------------------
 
         function preencherFiltros(atletas) {
-            const pesos = [...new Set(atletas.map(a => a.peso))].sort();
+            const pesosCombinadosUnicos = [...new Set(atletas.map(a => getPesoCombinado(a.peso)))].sort();
             const pesoFiltro = document.getElementById('peso-filtro');
-            preencherSelect(pesoFiltro, pesos);
+            preencherSelect(pesoFiltro, pesosCombinadosUnicos);
             pesoFiltro.addEventListener('change', aplicarFiltros);
         }
 
@@ -313,7 +365,7 @@
             const pesoSelecionado = document.getElementById('peso-filtro').value;
             
             const atletasFiltrados = atletas.filter(atleta => {
-                const pesoMatch = pesoSelecionado === 'Todos' || atleta.peso === pesoSelecionado;
+                const pesoMatch = pesoSelecionado === 'Todos' || getPesoCombinado(atleta.peso) === pesoSelecionado;
                 return pesoMatch;
             });
             
@@ -329,28 +381,28 @@
                 return;
             }
 
-            const gruposPorGenero = {};
+            const gruposPorSexo = {};
             atletasParaRenderizar.forEach(atleta => {
-                const genero = atleta.genero;
-                if (!gruposPorGenero[genero]) {
-                    gruposPorGenero[genero] = {};
+                const sexo = atleta.sexo;
+                if (!gruposPorSexo[sexo]) {
+                    gruposPorSexo[sexo] = {};
                 }
                 
-                const chaveCategoria = `${getCategoriaCombinada(atleta)} - ${atleta.peso}`;
-                if (!gruposPorGenero[genero][chaveCategoria]) {
-                    gruposPorGenero[genero][chaveCategoria] = [];
+                const chaveCategoria = `${getCategoriaCombinada(atleta)} - ${getPesoCombinado(atleta.peso)}`;
+                if (!gruposPorSexo[sexo][chaveCategoria]) {
+                    gruposPorSexo[sexo][chaveCategoria] = [];
                 }
-                gruposPorGenero[genero][chaveCategoria].push(atleta);
+                gruposPorSexo[sexo][chaveCategoria].push(atleta);
             });
             
-            for (const genero in gruposPorGenero) {
-                if (gruposPorGenero.hasOwnProperty(genero)) {
-                    const generoTitulo = document.createElement('h2');
-                    generoTitulo.className = 'gender-title';
-                    generoTitulo.textContent = genero.toUpperCase();
-                    container.appendChild(generoTitulo);
+            for (const sexo in gruposPorSexo) {
+                if (gruposPorSexo.hasOwnProperty(sexo)) {
+                    const sexoTitulo = document.createElement('h2');
+                    sexoTitulo.className = 'sexo-title';
+                    sexoTitulo.textContent = sexo.toUpperCase();
+                    container.appendChild(sexoTitulo);
                     
-                    const gruposDaFaixa = gruposPorGenero[genero];
+                    const gruposDaFaixa = gruposPorSexo[sexo];
                     const chavesOrdenadas = Object.keys(gruposDaFaixa).sort();
 
                     chavesOrdenadas.forEach(chave => {
